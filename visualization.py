@@ -1,5 +1,7 @@
 import plotly.express as px
 
+INDONESIA_GEOJSON = "./indonesia-prov.geojson"
+
 def single_plot_line_chart(data, x, y, title, y_label, dataset_name):
     fig = px.line(
         data,
@@ -31,4 +33,18 @@ def stacked_bar_chart(data, x, y, color, title, labels):
     )
     fig.update_layout(template="plotly_dark", xaxis=dict(tickmode='linear', tickangle=45))
     
+    return fig
+
+def geo_map(data_frame, year, location, color, title):
+    data_frame = data_frame[(data_frame["tahun"] == year) & (data_frame["jenis"] == "TOTAL")]
+    print(data_frame)
+    fig = px.choropleth(
+        data_frame=data_frame,
+        geojson=INDONESIA_GEOJSON,
+        locations=location,
+        color=color,
+        title=title,
+        color_continuous_scale="Viridis"
+    )
+
     return fig
