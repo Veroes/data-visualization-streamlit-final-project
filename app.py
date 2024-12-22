@@ -92,7 +92,6 @@ if "tahun" in filtered_data.columns and selected_key in filtered_data.columns:
 if "jenis" in filtered_data.columns:
     filtered_jenis_data = filtered_data[filtered_data["jenis"] != "TOTAL"]
     grouped_data = filtered_jenis_data.groupby(["tahun", "jenis"]).mean(numeric_only=True).reset_index()
-
     fig = stacked_bar_chart(
         data=grouped_data,
         x="tahun",
@@ -100,21 +99,6 @@ if "jenis" in filtered_data.columns:
         color="jenis",
         title=f"{DATASET_METADATA[selected_key]['name']} dengan Makanan dan Nonmakanan",
         labels={selected_key: DATASET_METADATA[selected_key]["name"], "tahun": "Tahun", "jenis": "Jenis Pengeluaran"}
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
-
-if "daerah" in filtered_data.columns:
-    filtered_daera_data = filtered_data[filtered_data["daerah"] != "TOTAL"]
-    grouped_data = filtered_daera_data.groupby(["tahun", "daerah"]).mean(numeric_only=True).reset_index()
-
-    fig = stacked_bar_chart(
-        data=grouped_data,
-        x="tahun",
-        y=selected_key,
-        color="daerah",
-        title=f"{DATASET_METADATA[selected_key]['name']} dengan Perdesaan, Perkotaan",
-        labels={selected_key: DATASET_METADATA[selected_key]["name"], "tahun": "Tahun", "daerah": "Daerah"}
     )
     
     st.plotly_chart(fig, use_container_width=True)
