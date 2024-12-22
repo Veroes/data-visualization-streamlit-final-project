@@ -9,7 +9,6 @@ DATASET_METADATA = get_dataset_metadata()
 # SIDEBAR
 st.sidebar.title("Kelompok 9")
 st.sidebar.text("1. Arifki Ilham (1301210405)\n2. Atha Ahsan Xavier Haris (1301210045)\n3. Farrel Arkana Veda (1301213138)")
-st.sidebar.title("Pilih Dataset")
 
 selected_dataset_name = st.sidebar.selectbox(
     "Pilih dataset untuk ditampilkan:",
@@ -18,10 +17,8 @@ selected_dataset_name = st.sidebar.selectbox(
 selected_key = [key for key, value in DATASET_METADATA.items() if value["name"] == selected_dataset_name][0]
 
 # FILTERS
-st.sidebar.subheader("Filter Data")
-
 year_filter = st.sidebar.slider(
-    "Pilih Tahun",
+    "Filter Tahun",
     min_value=int(datasets[selected_key]["tahun"].min()),
     max_value=int(datasets[selected_key]["tahun"].max()),
     value=(
@@ -30,7 +27,7 @@ year_filter = st.sidebar.slider(
     )
 )
 province_filter = st.sidebar.selectbox(
-    "Pilih Provinsi",
+    "Pilih Provinsi:",
     options=list(datasets[selected_key]["provinsi"].unique())
 )
 
@@ -50,21 +47,20 @@ st.subheader(f"Data: {selected_dataset_name}")
 st.markdown(DATASET_METADATA[selected_key]["description"])
 
 st.subheader("Ringkasan Statistik")
-st.write(f"Total Baris: {filtered_data.shape[0]}")
-st.write(f"Total Kolom: {filtered_data.shape[1]}")
+st.write(f"Total Baris: {filtered_data.shape[0]} | Total Kolom: {filtered_data.shape[1]}"   )
 st.table(filtered_data.describe())
 
-st.subheader("Filtered Dataset")
+st.subheader(f"Dataset {province_filter.title()}")
 st.dataframe(filtered_data, height=250, use_container_width=True)
 
 st.download_button(
-    label="Download Filtered Data",
+    label=f"Download Filtered {province_filter.title()}",
     data=filtered_data.to_csv(index=False),
     file_name=f"{selected_key}_filtered.csv",
     mime="text/csv"
 )
 
-st.subheader("Line Chart")
+st.subheader("Visualisasi Data")
 if "tahun" in filtered_data.columns and selected_key in filtered_data.columns:
     if "jenis" in filtered_data.columns:
         chart_data = filtered_data.where(filtered_data["jenis"] == "TOTAL").groupby("tahun").mean(numeric_only=True).reset_index()
@@ -93,6 +89,21 @@ if "jenis" in filtered_data.columns:
         color="jenis",
         title=f"{DATASET_METADATA[selected_key]['name']} dengan Makanan dan Nonmakanan",
         labels={selected_key: DATASET_METADATA[selected_key]["name"], "tahun": "Tahun", "jenis": "Jenis Pengeluaran"}
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+
+if "daerah" in filtered_data.columns:
+    filtered_daera_data = filtered_data[filtered_data["daerah"] != "TOTAL"]
+    grouped_data = filtered_daera_data.groupby(["tahun", "daerah"]).mean(numeric_only=True).reset_index()
+
+    fig = stacked_bar_chart(
+        data=grouped_data,
+        x="tahun",
+        y=selected_key,
+        color="daerah",
+        title=f"{DATASET_METADATA[selected_key]['name']} dengan Perdesaan, Perkotaan",
+        labels={selected_key: DATASET_METADATA[selected_key]["name"], "tahun": "Tahun", "daerah": "Daerah"}
     )
     
     st.plotly_chart(fig, use_container_width=True)
