@@ -28,13 +28,13 @@ year_filter = st.sidebar.slider(
 )
 province_filter = st.sidebar.selectbox(
     "Pilih Provinsi:",
-    options=list(datasets[selected_key]["provinsi"].unique())
+    options=["Seluruh Provinsi"] + list(datasets[selected_key]["provinsi"].unique())
 )
 
 filtered_data = datasets[selected_key][
     (datasets[selected_key]["tahun"].between(year_filter[0], year_filter[1]))
 ]
-if province_filter != "":
+if province_filter != "Seluruh Provinsi":
     filtered_data = filtered_data[filtered_data["provinsi"] == province_filter]
 
 # MAIN PAGE
@@ -72,33 +72,53 @@ st.download_button(
 )
 
 st.subheader("Visualisasi Data")
-if "tahun" in filtered_data.columns and selected_key in filtered_data.columns:
+if province_filter != "Seluruh Provinsi":
+    if "tahun" in filtered_data.columns and selected_key in filtered_data.columns:
+        if "jenis" in filtered_data.columns:
+            chart_data = filtered_data.where(filtered_data["jenis"] == "TOTAL").groupby("tahun").mean(numeric_only=True).reset_index()
+        else:
+            chart_data = filtered_data.groupby("tahun").mean(numeric_only=True).reset_index()
+
+        fig = single_plot_line_chart(
+            data=chart_data,
+            x="tahun",
+            y=selected_key,
+            title=DATASET_METADATA[selected_key]["name"],
+            y_label=DATASET_METADATA[selected_key]["name"],
+            dataset_name=selected_dataset_name
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
     if "jenis" in filtered_data.columns:
-        chart_data = filtered_data.where(filtered_data["jenis"] == "TOTAL").groupby("tahun").mean(numeric_only=True).reset_index()
-    else:
-        chart_data = filtered_data.groupby("tahun").mean(numeric_only=True).reset_index()
-
-    fig = single_plot_line_chart(
-        data=chart_data,
-        x="tahun",
-        y=selected_key,
-        title=DATASET_METADATA[selected_key]["name"],
-        y_label=DATASET_METADATA[selected_key]["name"],
-        dataset_name=selected_dataset_name
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-if "jenis" in filtered_data.columns:
-    filtered_jenis_data = filtered_data[filtered_data["jenis"] != "TOTAL"]
-    grouped_data = filtered_jenis_data.groupby(["tahun", "jenis"]).mean(numeric_only=True).reset_index()
-    fig = stacked_bar_chart(
-        data=grouped_data,
-        x="tahun",
-        y=selected_key,
-        color="jenis",
-        title=f"{DATASET_METADATA[selected_key]['name']} dengan Makanan dan Nonmakanan",
-        labels={selected_key: DATASET_METADATA[selected_key]["name"], "tahun": "Tahun", "jenis": "Jenis Pengeluaran"}
-    )
+        filtered_jenis_data = filtered_data[filtered_data["jenis"] != "TOTAL"]
+        grouped_data = filtered_jenis_data.groupby(["tahun", "jenis"]).mean(numeric_only=True).reset_index()
+        fig = stacked_bar_chart(
+            data=grouped_data,
+            x="tahun",
+            y=selected_key,
+            color="jenis",
+            title=f"{DATASET_METADATA[selected_key]['name']} dengan Makanan dan Nonmakanan",
+            labels={selected_key: DATASET_METADATA[selected_key]["name"], "tahun": "Tahun", "jenis": "Jenis Pengeluaran"}
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+else:
+     for year in range(year_filter[0], year_filter[1] + 1):
+        yearly_data = datasets[selected_key][datasets[selected_key]["tahun"] == year]
     
-    st.plotly_chart(fig, use_container_width=True)
+        
+        if not yearly_data.empty: 
+            chart_data = yearly_data.groupby("provinsi").mean(numeric_only=True).reset_index()
+            
+            chart_data = chart_data.sort_values(by=selected_key, ascending=False)
+
+            fig = stacked_bar_chart(
+                data=chart_data,
+                x="provinsi",
+                y=selected_key,
+                color=None,
+                title=f"Data Tahun {year} untuk Seluruh Provinsi",
+                labels={"provinsi": "Provinsi", selected_key: DATASET_METADATA[selected_key]["name"]}
+            )
+            st.plotly_chart(fig, use_container_width=True)
