@@ -36,7 +36,7 @@ Create and activate a virtual environment for Python to isolate the project depe
 #### Windows Command Prompt
 
 ```cmd
-python -m venv .venv
+python -m venv venv
 .venv\Scripts\activate.bat
 ```
 
@@ -50,7 +50,7 @@ python -m venv venv
 #### macOS and Linux
 
 ```bash
-python3 -m venv .venv
+python3 -m venv venv
 source .venv/bin/activate
 ```
 
