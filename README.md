@@ -43,7 +43,7 @@ python -m venv .venv
 #### Windows PowerShell
 
 ```powershell
-python -m venv .venv
+python -m venv venv
 .venv\Scripts\Activate.ps1
 ```
 
