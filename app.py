@@ -1,7 +1,7 @@
 import streamlit as st
 
 from datasets import load_datasets, get_dataset_metadata
-from visualization import single_plot_line_chart, stacked_bar_chart, geo_map
+from visualization import single_plot_line_chart, stacked_bar_chart
 
 datasets = load_datasets()
 DATASET_METADATA = get_dataset_metadata()
@@ -39,26 +39,16 @@ if province_filter != "Seluruh Provinsi":
 
 # MAIN PAGE
 st.title("Kesejahteraan Pekerja Indonesia")
+st.image("./images/scenery_1.png", use_container_width=True)
 st.markdown("[Dataset](https://www.kaggle.com/datasets/rezkyyayang/pekerja-sejahtera)")
-st.text("Sebagai seseorang yang baru memasuki dunia kerja, seringkali muncul berbagai pertimbangan, seperti lokasi tempat bekerja, jumlah upah yang akan diterima, hingga apakah pendapatan tersebut cukup untuk memenuhi kebutuhan sehari-hari. Berdasarkan data yang diambil dari Badan Pusat Statistik (BPS), dashboard ini dirancang untuk membantu pekerja dalam menentukan lokasi kerja yang sesuai dengan mempertimbangkan variabel seperti pendapatan dan pengeluaran. Dashboard ini menjadi relevan karena persaingan dunia kerja yang semakin ketat, sehingga perencanaan yang matang sangat diperlukan, termasuk memastikan kesejahteraan pekerja berdasarkan keputusan yang diambil.")
-
-# GEOMAP
-geo_fig = geo_map(
-    data_frame=datasets[selected_key],
-    year=2017,
-    location="provinsi",
-    color=selected_key,
-    title=f"Peta Sebaran {DATASET_METADATA[selected_key]['name']}",
-)
-
-st.plotly_chart(geo_fig, use_container_width=True)
+st.text("Sebagai individu yang baru memulai karier, berbagai pertimbangan sering muncul, seperti lokasi tempat kerja, besaran gaji yang diterima, hingga kecukupan pendapatan untuk memenuhi kebutuhan sehari-hari. Mengacu pada data dari Badan Pusat Statistik (BPS), dashboard ini dirancang untuk membantu pekerja memilih lokasi kerja yang tepat dengan mempertimbangkan faktor seperti pendapatan dan pengeluaran. Dashboard ini memiliki relevansi tinggi mengingat persaingan di dunia kerja yang semakin ketat, sehingga perencanaan yang matang menjadi hal krusial, termasuk memastikan kesejahteraan pekerja melalui keputusan yang tepat.")
 
 st.title("Eksplorasi Dataset")
 st.subheader(f"Data: {selected_dataset_name}")
 st.markdown(DATASET_METADATA[selected_key]["description"])
 
 st.subheader("Ringkasan Statistik")
-st.write(f"Total Baris: {filtered_data.shape[0]} | Total Kolom: {filtered_data.shape[1]}"   )
+st.write(f"Total Baris: {filtered_data.shape[0]} | Total Kolom: {filtered_data.shape[1]}")
 st.table(filtered_data.describe())
 
 st.subheader(f"Dataset {province_filter.title()}")
@@ -104,7 +94,7 @@ if province_filter != "Seluruh Provinsi":
         
         st.plotly_chart(fig, use_container_width=True)
 else:
-     for year in range(year_filter[0], year_filter[1] + 1):
+    for year in range(year_filter[0], year_filter[1] + 1):
         yearly_data = datasets[selected_key][datasets[selected_key]["tahun"] == year]
     
         
