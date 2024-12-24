@@ -37,21 +37,21 @@ Create and activate a virtual environment for Python to isolate the project depe
 
 ```cmd
 python -m venv venv
-.venv\Scripts\activate.bat
+venv\Scripts\activate.bat
 ```
 
 #### Windows PowerShell
 
 ```powershell
 python -m venv venv
-.venv\Scripts\Activate.ps1
+venv\Scripts\Activate.ps1
 ```
 
 #### macOS and Linux
 
 ```bash
 python3 -m venv venv
-source .venv/bin/activate
+source venv/bin/activate
 ```
 
 ### Step 4: Install Dependencies
